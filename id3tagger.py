@@ -1,25 +1,31 @@
+import io
+import os
+import tkinter.messagebox
+
 from mutagen.mp3 import MP3
 from mutagen.easyid3 import EasyID3
 import glob
 #import tkinter as tk
-from tkinter import Tk,Label,Button,Entry
+from tkinter import Tk,Label,Button,Entry,Menu
 from tkinter import filedialog as fd
 from os.path import exists
 import userpaths
 import tags
-
-
 import threading
-if exists("defaults.py"):
-    import defaults
-my_tag = '0215'
-show_title = "A Whole Lotta Rock"
-show_artist = "Hard Rock Hell Radio"
-album_artist = "effjerbee aka FJB"
+import defaults
+my_tag = ''
+show_title = ""
+show_artist = ""
+album_artist = ""
 composer = album_artist
 track = 0
 disk_number = 0
 myDocuments=5
+
+
+# track = 0
+# disk_number = 0
+# myDocuments=5
 
 def callback():
     #name = fd.askopenfilename()
@@ -50,6 +56,14 @@ def Tagger_Thread(filename):
     mp3file["Discnumber"] = disk_number
 
     mp3file.save()  # save changes. don't forget this line.
+
+def wipeConfig():
+    if exists(defaults.confPath):
+        response = tkinter.messagebox.askyesno (title="Are you sure?" ,message="Are you sure you want to erase the tag data?")
+        if response==True:
+            os.remove(defaults.confPath)
+            window.quit()
+
 
 
 def Tagger(tPath):
@@ -86,16 +100,40 @@ if __name__ == '__main__':
     window.geometry('320x200')
 
 
-    myDocs=userpaths.get_my_documents()
+    #myDocs=userpaths.get_my_documents()
     lbl = Label(window, text='Select a folder containing relevent mp3s')
 
-    if exists(myDocs+"//id3Tagger.conf"):
-        window.title("id3 tagger")
+    if exists(defaults.confPath):
+        confHandle = io.open(defaults.confPath, mode="r")
+        line = confHandle.readline().rstrip()
 
-        lbl = Label(window, text='Select a folder containing relevent mp3s')
-        btn = Button(window, text='Tag Mp3 files', command=callback)
-        btn.grid(column=0, row=2)
-        lbl.grid(column=0, row=0)
+        window.title("id3 tagger")
+        menuBar = Menu(window)
+        window.config(menu=menuBar)
+
+        fileMenu = Menu(menuBar)
+        fileMenu.add_command(label="Wipe tag config", command=wipeConfig)
+        appMenu = Menu(menuBar)
+        appMenu.add_command(label="Exit", foreground="#cc0000", command=window.destroy)
+
+        menuBar.add_cascade(label="File", menu=fileMenu)
+        menuBar.add_cascade(label='App', menu=appMenu)
+
+        if (line==defaults.taggerName):
+            my_tag = confHandle.readline().rstrip()
+            show_title = confHandle.readline().rstrip()
+            show_artist = confHandle.readline().rstrip()
+            album_artist = confHandle.readline().rstrip()
+            composer = album_artist
+            confHandle.close()
+
+            lbl = Label(window, text='Select a folder containing relevent mp3s')
+            btn = Button(window, text='Tag Mp3 files', command=callback)
+            btn.grid(column=0, row=2)
+            lbl.grid(column=0, row=0)
+        else:
+            confHandle.close()
+
 
     else:
         window.title("id3 tagger options")

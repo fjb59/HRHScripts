@@ -1,5 +1,7 @@
+import io
 import tkinter as tk
 import tkinter.font as tkFont
+import defaults
 
 class App:
     def __init__(self, root):
@@ -14,86 +16,78 @@ class App:
         root.geometry(alignstr)
         root.resizable(width=False, height=False)
 
-        GLabel_890=tk.Label(root)
-        ft = tkFont.Font(family='Times',size=10)
-        GLabel_890["font"] = ft
-        GLabel_890["fg"] = "#333333"
-        GLabel_890["justify"] = "left"
-        GLabel_890["text"] = "Tag"
-        GLabel_890.place(x=190,y=70,width=70,height=25)
+        lblTag=tk.Label(root)
+        lblTag["justify"] = "left"
+        lblTag["text"] = "Tag"
+        lblTag.place(x=190,y=70,width=70,height=25)
 
-        GLineEdit_322=tk.Entry(root)
-        GLineEdit_322["borderwidth"] = "1px"
-        ft = tkFont.Font(family='Times',size=10)
-        GLineEdit_322["font"] = ft
-        GLineEdit_322["fg"] = "#333333"
-        GLineEdit_322["justify"] = "right"
-        GLineEdit_322["text"] = "Entry"
-        GLineEdit_322.place(x=310,y=70,width=70,height=25)
+        tag_var = tk.StringVar()
+        edtTag=tk.Entry(root,textvariable=tag_var)
+        edtTag["borderwidth"] = "1px"
+        edtTag["fg"] = "#003300"
+        edtTag["justify"] = "right"
+        edtTag.place(x=310,y=70,width=70,height=25)
 
-        GLabel_129=tk.Label(root)
-        ft = tkFont.Font(family='Times',size=10)
-        GLabel_129["font"] = ft
-        GLabel_129["fg"] = "#333333"
-        GLabel_129["justify"] = "left"
-        GLabel_129["text"] = "Show Title"
-        GLabel_129.place(x=210,y=110,width=70,height=25)
+        lbST=tk.Label(root)
+        lbST["justify"] = "left"
+        lbST["text"] = "Show Title"
+        lbST.place(x=210,y=110,width=70,height=25)
 
-        GLineEdit_554=tk.Entry(root)
-        GLineEdit_554["borderwidth"] = "1px"
-        ft = tkFont.Font(family='Times',size=10)
-        GLineEdit_554["font"] = ft
-        GLineEdit_554["fg"] = "#333333"
-        GLineEdit_554["justify"] = "right"
-        GLineEdit_554["text"] = "Entry"
-        GLineEdit_554.place(x=310,y=110,width=75,height=30)
+        stVar = tk.StringVar()
+        edtST=tk.Entry(root, textvariable=stVar)
+        edtST["borderwidth"] = "1px"
+        edtST["justify"] = "right"
+        edtST["fg"] = "#003300"
+        edtST.place(x=310,y=110,width=75,height=30)
 
-        GLabel_834=tk.Label(root)
-        ft = tkFont.Font(family='Times',size=10)
-        GLabel_834["font"] = ft
-        GLabel_834["fg"] = "#333333"
-        GLabel_834["justify"] = "left"
-        GLabel_834["text"] = "Show Artist"
-        GLabel_834.place(x=210,y=140,width=70,height=25)
+        lblSA=tk.Label(root)
+        lblSA["justify"] = "left"
+        lblSA["text"] = "Show Artist"
+        lblSA.place(x=210,y=140,width=70,height=25)
 
-        GLabel_561=tk.Label(root)
+        saVar=tk.StringVar()
+        edtSA=tk.Entry(root, textvariable=saVar)
+        edtSA["borderwidth"] = "1px"
         ft = tkFont.Font(family='Times',size=10)
-        GLabel_561["font"] = ft
-        GLabel_561["fg"] = "#333333"
-        GLabel_561["justify"] = "left"
-        GLabel_561["text"] = "Album Artist"
-        GLabel_561.place(x=210,y=170,width=70,height=25)
+        edtSA["font"] = ft
+        edtSA["fg"] = "#003300"
+        edtSA["justify"] = "right"
+        edtSA.place(x=310,y=140,width=70,height=25)
 
-        GLineEdit_722=tk.Entry(root)
-        GLineEdit_722["borderwidth"] = "1px"
+        lblAA=tk.Label(root)
+        lblAA["justify"] = "left"
+        lblAA["text"] = "Album Artist"
+        lblAA.place(x=210,y=170,width=70,height=25)
+
+        aaVar=tk.StringVar()
+        edtAA=tk.Entry(root, textvariable=aaVar)
+        edtAA["borderwidth"] = "1px"
+        edtAA["fg"] = "#003300"
+        edtAA["justify"] = "right"
+        edtAA.place(x=310,y=170,width=70,height=25)
+
+        btnSave=tk.Button(root)
+        btnSave["bg"] = "#e9e9ed"
         ft = tkFont.Font(family='Times',size=10)
-        GLineEdit_722["font"] = ft
-        GLineEdit_722["fg"] = "#333333"
-        GLineEdit_722["justify"] = "right"
-        GLineEdit_722["text"] = "Entry"
-        GLineEdit_722.place(x=310,y=140,width=70,height=25)
+        btnSave["font"] = ft
+        btnSave["fg"] = "#00dd00"
+        btnSave["justify"] = "center"
+        btnSave["text"] = "Save"
+        btnSave.place(x=210,y=220,width=70,height=25)
+        btnSave["command"] = lambda: self.btnSave_command(root,tag_var.get(),stVar.get(),saVar.get(),aaVar.get())
 
-        GLineEdit_73=tk.Entry(root)
-        GLineEdit_73["borderwidth"] = "1px"
-        ft = tkFont.Font(family='Times',size=10)
-        GLineEdit_73["font"] = ft
-        GLineEdit_73["fg"] = "#333333"
-        GLineEdit_73["justify"] = "right"
-        GLineEdit_73["text"] = "Entry"
-        GLineEdit_73.place(x=310,y=170,width=70,height=25)
+    def btnSave_command(self,tWindow,tag,st,sa,aa):
+        print(f"command {tag}:{st}:{sa}:{aa}")
+        with  io.open(defaults.confPath,mode="w") as handle:
+            print(defaults.taggerName,file=handle)
+            print(tag,file=handle)
+            print(st,file=handle)
+            print(sa,file=handle)
+            print(aa,file=handle)
+            handle.close()
+            tWindow.quit()
 
-        GButton_290=tk.Button(root)
-        GButton_290["bg"] = "#e9e9ed"
-        ft = tkFont.Font(family='Times',size=10)
-        GButton_290["font"] = ft
-        GButton_290["fg"] = "#000000"
-        GButton_290["justify"] = "center"
-        GButton_290["text"] = "Save"
-        GButton_290.place(x=210,y=220,width=70,height=25)
-        GButton_290["command"] = self.GButton_290_command
 
-    def GButton_290_command(self):
-        print("command")
 
 # if __name__ == "__main__":
 #     # root = tk.Tk()
