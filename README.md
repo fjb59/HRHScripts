@@ -9,3 +9,4 @@ they must be in the format  tagname ptX.mp3 where tag is your id tax and X is th
 mp3 fiels not in this format will be ignored.
 
 # HRHScripts
+changed ui to qt
