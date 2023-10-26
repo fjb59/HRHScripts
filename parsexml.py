@@ -1,5 +1,8 @@
 import xml.etree.ElementTree as ET
 from os.path import exists
+from tkinter.filedialog import askopenfilename
+
+
 import pyperclip as cb
 
 
@@ -28,17 +31,22 @@ def ParseXML(tcFileName, **parms):
 
 
                         if ("extension" in grandchild.tag):
-                            ext = grandchild.getchildren()
-                            for extension in ext: #should be setteings
-                                for settings in extension:
-                                    for setting in settings:
-                                        if "entryType" in setting.tag:
-                                            if setting.text in ['0','1','2']:
-                                                if includeTrackTitle:
-                                                    tracklist.append(f"{track[0]}, {track[1]}")
-                                                else:
-                                                    tracklist.append(f"{track[0]}")
-                                                track[0] = ""
+                            try:
+                                ext = list(grandchild)
+                            except AttributeError:
+                                pass
+
+                            else:
+                                for extension in ext: #should be setteings
+                                    for settings in extension:
+                                        for setting in settings:
+                                            if "entryType" in setting.tag:
+                                                if setting.text in ['0','1','2']:
+                                                    if includeTrackTitle:
+                                                        tracklist.append(f"{track[0]}, {track[1]}")
+                                                    else:
+                                                        tracklist.append(f"{track[0]}")
+                                                    track[0] = ""
                        # track.clear()
         buf=""
         for tracks in tracklist:
@@ -50,3 +58,8 @@ def ParseXML(tcFileName, **parms):
         handle.close()
     else:
         print (tcFileName+" does not exist")
+if __name__ == '__main__':
+
+    name = askopenfilename()
+    print(name)
+    ParseXML(name, includeTrackTitle=True)
