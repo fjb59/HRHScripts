@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import (QAbstractButton, QApplication, QDialog, QDialogButt
                              QWidget, QFileDialog, QMenu, QPushButton, QAction, QMessageBox, QToolBar)
 from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import MP3
-
+import sys
 #defaults
 import defaults
 
@@ -192,9 +192,8 @@ class Ui_Dialog(object):
 
                 #self.model.appendRow(QStandardItem((f"{thisfile} has no part number.")))
 
+def main():
 
-if __name__ == "__main__":
-    import sys
 
 
     app = QtWidgets.QApplication(sys.argv)
@@ -207,4 +206,8 @@ if __name__ == "__main__":
     else:
         pass
     sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()
 
