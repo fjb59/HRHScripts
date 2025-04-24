@@ -10,3 +10,9 @@ mp3 fiels not in this format will be ignored.
 
 # HRHScripts
 changed ui to qt
+
+The toarchaveorg.py will need you to create your own credentials.py file which contains information in the flowing format.
+
+access_key = "your access key"
+secret_key="your secret key"
+searchpath = r"path to folder containing files you wish to upload"
