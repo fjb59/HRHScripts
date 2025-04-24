@@ -65,20 +65,13 @@ def upload(tFilename):
             print (r[0].status_code)
         else:
             print(f"media :{myMedia.created} already exists")
-def download(id,tFilename):
-    # not tested yet
-    myMedia = get_item(id)
-    if myMedia.exists:
-        r = myMedia.download(tFilename)
+
 
 
 mytag="0215"
-#item = get_item(mytag)
-#for k,v in item.metadata.items():
-#    print(print(k,":",v))
-#tags = read_tags("/Users/frank/pCloud Drive/HRH/recordings/021501042025.mp3")
+
 for files in glob.glob(credentials.searchpath + f'{mytag}*.mp3'):
     upload(files)
-pass
+
 
 
