@@ -1,20 +1,39 @@
+import glob
 from datetime import datetime
+from datetime import date
 
-from internetarchive import get_item
+from dateutil.utils import today
+
+import credentials
+import os
+
+from internetarchive import get_item, upload
 from mutagen.mp3 import MP3
 from mutagen.easyid3 import EasyID3
 
 def read_tags(filename):
-    print(f" The file is {filename}")
 
+    title = "NA"
+    artist = ""
+    albumArtist = ""
+    composer = ""
+    album = ""
 
     mp3file = MP3(filename, ID3=EasyID3)  # retag here
-    endodedby = mp3file["encodedby"]
-    title = mp3file["Title"]
-    artist =  mp3file["Artist"]
-    albumArtist = mp3file["AlbumArtist"]
-    composer = mp3file["composer"]
-    album = mp3file["Album"]
+
+    if "Title" in mp3file:
+        title = mp3file["Title"]
+
+    if "Artist" in mp3file:
+        artist =  mp3file["Artist"]
+
+    if "AlbumArtist" in mp3file:
+        albumArtist = mp3file["AlbumArtist"]
+
+    if "composer" in mp3file:
+        composer = mp3file["composer"]
+    if  "Album" in mp3file:
+        album = mp3file["Album"]
     return {"title":title,"artist":artist,"albumartist":albumArtist,'composer':composer,'album':album}
 
 def calcdate(tagname):
@@ -27,23 +46,33 @@ def freindlydate(date):
 
     return readable_date
 
-mytag='021525032025'
+def upload(tFilename):
+    if os.path.exists(tFilename):
+        ddmm = today().strftime("%d%m")
+        tags = read_tags(tFilename)
+        date = calcdate(tags['album'][0])
+        identifier = tags['album'][0] + "_" + ddmm
+        mediatype = 'audio'
+        collection = 'opensource_audio'
+        description = 'A whole lotta rock. ' + freindlydate(date)  # 25th march 2025
+        md = {'collection': collection, 'title': description, 'mediatype': mediatype}
+        myMedia = get_item(identifier)
+        if not myMedia.exists:
+            print (f"Uploading {tFilename} to Archive.org")
+            r = myMedia.upload(files=tFilename, metadata=md, access_key=credentials.access_key,
+                            secret_key=credentials.secret_key)
+
+            print (r[0].status_code)
+        else:
+            print(f"media :{myMedia.created} already exists")
+
 
 #item = get_item(mytag)
 #for k,v in item.metadata.items():
 #    print(print(k,":",v))
-tags = read_tags("/Users/frank/pCloud Drive/HRH/recordings/021501042025.mp3")
+#tags = read_tags("/Users/frank/pCloud Drive/HRH/recordings/021501042025.mp3")
+for files in glob.glob(credentials.searchpath + '0215*.mp3'):
+    upload(files)
 pass
-date = calcdate(tags['album'][0])
-# identifier : 021525032025
-mediatype = 'audio'
-collection = 'opensource_audio'
-creator =tags['composer']
 
-
-
-
-description = 'A whole lotta rock. ' + freindlydate(date) #25th march 2025
-subject = ['rock', 'effjerbee', 'effjerby', 'hrhRadio']
-title = tags['album']
 
