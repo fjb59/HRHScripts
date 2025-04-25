@@ -57,11 +57,12 @@ def freindlydate(date):
     return readable_date
 
 def upload(tFilename,verbose=True):
-    showname = 'A whole lotta rock'
+
     if os.path.exists(tFilename):
         #build archive metadata from mp3 metadata
         ddmm = today().strftime("%d%m")
         tags = read_tags(tFilename)
+        showname = tags['title']
         date = calcdate(tags['album'][0])
         identifier = tags['album'][0] + "_" + ddmm
         mediatype = 'audio'
