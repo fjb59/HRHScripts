@@ -16,3 +16,6 @@ The toarchaveorg.py will need you to create your own credentials.py file which c
 access_key = "your access key"
 secret_key="your secret key"
 searchpath = r"path to folder containing files you wish to upload"
+
+You can find your access and secret keys here:
+https://archive.org/account/s3.php
