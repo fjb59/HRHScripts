@@ -65,7 +65,7 @@ def upload(tFilename,verbose=True):
         #build archive metadata from mp3 metadata
         ddmm = today().strftime("%d%m")
         tags = read_tags(tFilename)
-        showname = tags['title']
+        showname = tags['title'][0]
         date = calcdate(tags['album'][0])
         identifier = tags['album'][0] + "_" + ddmm
         mediatype = 'audio'
