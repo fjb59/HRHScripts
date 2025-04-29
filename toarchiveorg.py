@@ -2,6 +2,9 @@
 #purpose: uploads and downloads your shows to internetarchive.org
 #2025
 
+#shebang. change to match your python path
+#!/usr/bin/python3
+
 import glob
 from datetime import datetime
 from dateutil.utils import today
