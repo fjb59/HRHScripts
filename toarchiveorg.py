@@ -70,7 +70,7 @@ def upload(tFilename,verbose=True):
         identifier = tags['album'][0] + "_" + ddmm
         mediatype = 'audio'
         collection = 'opensource_audio'
-        description = showname + freindlydate(date)  # 25th march 2025
+        description = showname + " " +freindlydate(date)  # 25th march 2025
         md = {'collection': collection, 'title': description, 'mediatype': mediatype}
         #check if archive already exists, if not then upload
         myMedia = get_item(identifier)
