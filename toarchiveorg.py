@@ -80,6 +80,7 @@ def upload(tFilename,verbose=True):
                             secret_key=credentials.secret_key,verbose=verbose)
 
             print (r[0].status_code)
+            return int(r[0].status_code)
         else:
             print(f"media :{myMedia.created} already exists")
 
