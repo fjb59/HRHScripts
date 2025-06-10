@@ -1,12 +1,13 @@
+#!/usr/bin/python3
+
 #created by Frank Barton AKA effjerbee
 #purpose: uploads and downloads your shows to internetarchive.org
 #2025
 
-#shebang. change to match your python path
-#!/usr/bin/python3
-
 import glob
 from datetime import datetime
+from time import strptime
+
 from dateutil.utils import today
 import os
 
@@ -67,22 +68,30 @@ def upload(tFilename,verbose=True):
         tags = read_tags(tFilename)
         showname = tags['title'][0]
         date = calcdate(tags['album'][0])
-        identifier = tags['album'][0] + "_" + ddmm
-        mediatype = 'audio'
-        collection = 'opensource_audio'
-        description = showname + " " +freindlydate(date)  # 25th march 2025
-        md = {'collection': collection, 'title': description, 'mediatype': mediatype}
-        #check if archive already exists, if not then upload
-        myMedia = get_item(identifier)
-        if not myMedia.exists:
-            print (f"Uploading {tFilename} to Archive.org")
-            r = myMedia.upload(files=tFilename, metadata=md, access_key=credentials.access_key,
-                            secret_key=credentials.secret_key,verbose=verbose)
+        broadcastdate = strptime(date, "%d%m%Y")
+        ddmmyy=strptime(today().strftime("%d%m%Y"),"%d%m%Y")
 
-            print (r[0].status_code)
-            return int(r[0].status_code)
-        else:
-            print(f"media :{myMedia.created} already exists")
+        if ddmmyy >=broadcastdate:
+
+            identifier = tags['album'][0] + "_" + ddmm
+            mediatype = 'audio'
+            collection = 'opensource_audio'
+            description = showname + " " +freindlydate(date)  # 25th march 2025
+            md = {'collection': collection, 'title': description, 'mediatype': mediatype}
+            #check if archive already exists, if not then upload
+            myMedia = get_item(identifier)
+            if not myMedia.exists:
+                print (f"Uploading {tFilename} to Archive.org")
+                r = myMedia.upload(files=tFilename, metadata=md, access_key=credentials.access_key,
+                                secret_key=credentials.secret_key,verbose=verbose)
+
+                print (r[0].status_code)
+                return int(r[0].status_code)
+            else:
+                print(f"media :{myMedia.created} already exists")
+        else :
+            print ("too soon to upload this.")
+            return -1
 
 def fetch(identifier,pattern = "*",verbose=True):
     #fetch archive files based on pattern, leave empty for all files in archive
@@ -94,10 +103,17 @@ def fetch(identifier,pattern = "*",verbose=True):
 
 
 mytag="0215"
+canDelete =True
 
 #search folder for mp3 files beginning with '{mytag}' and upload them. i may build this into a function later
 for files in glob.glob(credentials.searchpath + f'{mytag}*.mp3'):
-    upload(files)
+    r = upload(files)
+    if r == 200:
+        print("successful upload")
+        if canDelete:
+            os.remove(files)
+            print (f"{files} deleted.")
+
 
 
 #fetch('021522042025_2404',"*.mp3")
