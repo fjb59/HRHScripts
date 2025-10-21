@@ -149,7 +149,7 @@ def findByUploader(tag='', author=""):
           else:
             datestr = freindlydate(calcdate(item.metadata["identifier"]), "%Y-%m-%d")
             if datestr is None:
-                    print (f"skipping {item.metadata["identifier"]}")
+                    print (f"skipping {item.metadata['identifier']}")
             else:
                     update_tag(item.metadata["identifier"], "date", datestr)
                 #datename = "A Whole Lotta Rock - "+ datestr
