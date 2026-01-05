@@ -1,3 +1,4 @@
+import argparse
 import os
 import sys
 import tkinter.messagebox as messagebox
@@ -40,9 +41,10 @@ class Form(QDialog):
     def callback2(self):
 
         ui = id3tag_dialog.Ui_Dialog(self)
-        ui.show()
         if exists(defaults.confPath):
             ui.read_config()
+        ui.show()
+
 
     def callback3(self):
         self.wipe_config()
@@ -56,6 +58,10 @@ class Form(QDialog):
 
 
 if __name__ == '__main__':
+
+
+
+
     errmsg = 'Error!'
     app = QtCore.QCoreApplication.instance()
     if app is None:
@@ -73,3 +79,5 @@ if __name__ == '__main__':
 
     app.quitOnLastWindowClosed()
     app.exec()
+
+

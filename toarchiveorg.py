@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+import argparse
 #created by Frank Barton AKA effjerbee
 #purpose: uploads and downloads your shows to internetarchive.org
 #2025
@@ -173,8 +173,19 @@ def upload_show(tag,candelete=False) :
                 os.remove(files)
                 print (f"{files} deleted.")
 
-tag="0215"
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description="uploads to archive.org")
+    parser.add_argument("--tag", type=str, default="0215",
+                        help="Tag id.")
+    parser.add_argument("--candelete", type=str, default="yes",
+                        help="Tag id.")
+    args = parser.parse_args()
+
+tag=args.tag
 canDelete =True
+if args.candelete !="yes":
+    canDelete =False
 
 upload_show(tag,canDelete)
 #listofitems = findByUploader()

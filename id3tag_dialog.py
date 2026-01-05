@@ -1,3 +1,4 @@
+import argparse
 import glob
 import io
 import os
@@ -15,6 +16,7 @@ from mutagen.mp3 import MP3
 import sys
 # defaults
 import defaults
+import tags
 
 #
 
@@ -24,11 +26,14 @@ myDocuments = 5
 
 
 class Ui_Dialog(QDialog):
-    my_tag = ""
-    show_title = ""
-    show_artist = ""
-    album_artist = ""
-    composer = album_artist
+    my_tag = tags.my_tag
+    show_title = tags.show_title
+    show_artist = tags.show_artist
+    album_artist = tags.album_artist
+    album = tags.album
+    composer = tags.composer
+    dj = tags.dj
+    default_path = ""
 
 
 
@@ -54,7 +59,7 @@ class Ui_Dialog(QDialog):
         dir = QFileDialog.getExistingDirectory(caption="Open MP3 folder ")
         self.lineEdit.setText(dir)
 
-        filez = glob.glob(f"{dir}\\{self.my_tag}*.mp3")  # get array of filename with mp3 extension
+        filez = glob.glob(f"{dir}/{self.my_tag}*.mp3")  # get array of filename with mp3 extension
         # print the first element of filez:
         self.model.clear()
         self.toolButton.setEnabled(False)
@@ -64,14 +69,9 @@ class Ui_Dialog(QDialog):
             # print (thisfile)
             this_file_list = thisfile.split("\\")  # seperate filename from path
             last_chunk = len(this_file_list) - 1
-            if this_file_list[last_chunk].count(" pt") > 0:
-                # if it ends ' pt' then part number  in the filemame then ok to carry on or raise an error
-                self.model.appendRow(QStandardItem(this_file_list[last_chunk]))
 
-            else:
-                pass
+            self.model.appendRow(QStandardItem(this_file_list[last_chunk]))
 
-                # self.model.appendRow(f"{thisfile} has no part number.")
 
     def what_button(self, t_button):
         print(f"What Button {t_button.text()}")
@@ -108,7 +108,7 @@ class Ui_Dialog(QDialog):
         last_chunk = len(this_file_list) - 1
         song = this_file_list[last_chunk].split('.')[0]  # remove file extension
         file_section = song.split(' pt')[0]  # seperate filename and part number
-        track = song.split(' pt')[1]  # seperate filename and part number
+        track = 1
         disk_number = track
         mp3file = MP3(filename, ID3=EasyID3)  # retag here
         mp3file["encodedby"] = 'id3tagger'
@@ -116,13 +116,15 @@ class Ui_Dialog(QDialog):
         mp3file["Artist"] = self.show_artist
         mp3file["AlbumArtist"] = self.album_artist
         mp3file["composer"] = self.composer
-        mp3file["Album"] = f"{file_section} pt{track}"
-        mp3file["Tracknumber"] = track
-        mp3file["Discnumber"] = disk_number
+
+        mp3file["Album"] = song.split('/')[-1]
+      #  mp3file["DJ"] = self.dj
+      #  mp3file["Tracknumber"] = 1
+      #  mp3file["Discnumber"] = 1
 
         mp3file.save()  # save changes. don't forget this line.
 
-    def tagger(self, tPath):
+    def tagger(self, tPath,tag="0"):
 
         if exists(tPath):
             segs_path = tPath
@@ -131,22 +133,18 @@ class Ui_Dialog(QDialog):
             segs_path = "P:\\HRH\\20230530_1500"
         # tags = [{'artist':f'{show_artist}'}, {'title':f"{show_title} "}]
 
-        filez = glob.glob(f"{segs_path}\\{self.my_tag}*.mp3")  # get array of filename with mp3 extension
+        filez = glob.glob(f"{segs_path}/{self.my_tag}*.mp3")  # get array of filename with mp3 extension
         # print the first element of filez:
         self.model.clear()
         for thisfile in filez:
 
             # print (thisfile)
-            this_file_list = thisfile.split("\\")  # seperate filename from path
+            this_file_list = thisfile.split("/")  # seperate filename from path
             last_chunk = len(this_file_list) - 1
-            if this_file_list[last_chunk].count(" pt") > 0:
-                # if it ends ' pt' then part number  in the filemame then ok to carry on or raise an error
-                self.model.appendRow(QStandardItem(thisfile))
-                threading.Thread(target=self.tagger_thread, args=(thisfile,)).start()
-            else:
-                pass
 
-                # self.model.appendRow(QStandardItem((f"{thisfile} has no part number.")))
+            self.model.appendRow(QStandardItem(thisfile))
+            threading.Thread(target=self.tagger_thread, args=(thisfile,)).start()
+
     def __init__(self,parent=None):
         super().__init__()
         if not self.objectName():
@@ -193,20 +191,34 @@ class Ui_Dialog(QDialog):
 
 
 
-def main():
+def main(tpath = "",tag=tags.my_tag):
     app = QtCore.QCoreApplication.instance()
     if app is None:
         app = QtWidgets.QApplication(sys.argv)
         dialog = Ui_Dialog()
+        dialog.default_path = tpath
+        dialog.my_tag=tag
 
-        dialog.show()
-        if exists(defaults.confPath):
-            dialog.read_config()
 
+        if tpath == "":
+            dialog.show()
+            if exists(defaults.confPath):
+                dialog.read_config()
+
+            else:
+                pass
+                sys.exit(app.exec())
         else:
-            pass
-            sys.exit(app.exec())
+            dialog.tagger(tpath,tag)
 
 
 if __name__ == "__main__":
-    main()
+
+    parser = argparse.ArgumentParser(description="Breaks mp3 file into chunks")
+    parser.add_argument("--path", type=str, default="",
+                        help="Path of files to tag .")
+    parser.add_argument("--tag", type=str, default=tags.my_tag,
+                        help="Tag id.")
+    args = parser.parse_args()
+
+    main(args.path,args.tag)
