@@ -118,46 +118,11 @@ def upload(tFilename,verbose=True):
             print ("too soon to upload this.")
             return -1
 
-def update_tag(identifier,tagid,value):
-    item = get_item(identifier)
-    item.modify_metadata({tagid: value}, access_key=keys.access_key, secret_key=keys.secret_key)
-
-def erase_tag(identifier,tagid):
-    item = get_item(identifier)
-    item.modify_metadata({tagid: 'REMOVE_TAG'}, access_key=keys.access_key, secret_key=keys.secret_key)
 
 
 
-def fetch(identifier,pattern = "*",verbose=True):
-    #fetch archive files based on pattern, leave empty for all files in archive
-    myMedia = get_item(identifier)
-    if myMedia.exists:
-        #downloado only if we don't aleady have it
-        download(identifier,glob_pattern=pattern,checksum_archive=True,verbose=verbose)
-        print (f"Downloaded to {os.getcwd()}")
-def findByQuery(query):
-    return search_items(query)
-    pass
-def findByUploader(tag='', author=""):
-    listofthings=findByQuery('uploader:(g7wap@live.co.uk)').iter_as_items()
-    if len(listofthings)>0:
-        for item in listofthings:
 
-    
-          if 'date' in item.metadata:
-              continue
-          else:
-            datestr = freindlydate(calcdate(item.metadata["identifier"]), "%Y-%m-%d")
-            if datestr is None:
-                    print (f"skipping {item.metadata['identifier']}")
-            else:
-                    update_tag(item.metadata["identifier"], "date", datestr)
-                #datename = "A Whole Lotta Rock - "+ datestr
-                #update_tag(item.metadata["identifier"],"creator","Effjerbee")
-                #erase_tag(item.metadata["identifier"],"Subject")
-                    print ("Identifier :"+item.metadata["identifier"]+ " Updated")
-    else:
-        print("nothing found")
+
 
 
 
